@@ -112,7 +112,6 @@ pred_val = predictions[idx][0]
 
 st.sidebar.divider()
 st.sidebar.subheader(f"📅 {view_date_str} 분석")
-
 # 1. 실제 종가와 예측가 (유지)
 st.sidebar.write(f"**실제 종가:** ${actual_val:.2f}")
 st.sidebar.write(f"**GRU 예측:** ${pred_val:.2f}")
@@ -125,10 +124,6 @@ vix_values = df['VIX'].values[seq_length:]
 selected_vix = vix_values[idx]
 vix_status = "🔴 주의" if selected_vix >= 20 else "🟢 안정"
 st.sidebar.write(f"**시장 변동성(VIX):** {selected_vix:.2f} ({vix_status})")
-
-# ----------------------------------------------------
-# 6. 메인 화면 구성
-st.title("📈 MSFT 스마트 주가 분석 시스템")
 
 # 6. 메인 화면 구성
 st.title("📈 MSFT 스마트 주가 분석 시스템")
