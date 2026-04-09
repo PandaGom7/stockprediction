@@ -163,29 +163,26 @@ with t1:
 
 with t2:
     st.subheader("누적 수익률 분석 (종가 기준)")
-    st.markdown("선택한 투자 시작일로부터의 주가 상승률을 기반으로 한 수익률 변화입니다.")
+    st.markdown("사이드바에서 선택한 날짜로부터의 주가 상승률을 기반으로 한 수익률 변화입니다.")
     
-    # 1. 투자 시작일 선택 UI 생성
-    selected_start_date = st.selectbox("투자 시작일 선택", dates)
+    # 🚨 기존에 있던 selectbox 코드를 삭제하고, 
+    # 사이드바에서 이미 구해둔 'idx'를 활용합니다.
     
-    # 2. 선택한 날짜의 인덱스 찾기
-    start_idx = list(dates).index(selected_start_date)
+    # 1. 선택한 날짜의 종가(시작 가격) 추출 및 화면에 표시
+    start_price = actual_prices[idx][0]
+    date_str = pd.to_datetime(dates[idx]).strftime('%Y-%m-%d')
+    st.info(f"📌 사이드바에서 선택하신 **{date_str}**의 기준 종가는 **${start_price:.2f}** 입니다.")
     
-    # 💡 3. [추가된 부분] 선택한 날짜의 종가(시작 가격) 추출 및 화면에 표시
-    start_price = actual_prices[start_idx][0]
-    date_str = pd.to_datetime(selected_start_date).strftime('%Y-%m-%d')
-    st.info(f"📌 선택하신 **{date_str}**의 기준 종가는 **${start_price:.2f}** 입니다.")
+    # 2. 선택한 날짜 이후의 데이터만 슬라이싱
+    filtered_dates = dates[idx:]
+    filtered_prices = actual_prices[idx:]
     
-    # 4. 선택한 날짜 이후의 데이터만 슬라이싱
-    filtered_dates = dates[start_idx:]
-    filtered_prices = actual_prices[start_idx:]
-    
-    # 5. 수익률 계산 (선택한 날짜의 종가를 '0번째'로 두고 계산)
+    # 3. 수익률 계산 (선택한 날짜의 종가를 '0번째'로 두고 계산)
     investment = 1000
     cum_returns = (filtered_prices / filtered_prices[0]) - 1
     asset_value = (1 + cum_returns) * investment
     
-    # 6. 차트 그리기
+    # 4. 차트 그리기
     fig_rev = go.Figure()
     
     # 누적 수익률 선 추가
@@ -206,10 +203,14 @@ with t2:
     )
     st.plotly_chart(fig_rev, use_container_width=True)
     
-    # 7. 최종 결과 요약 텍스트 업데이트
-    final_ret = cum_returns[-1][0] * 100
-    final_asset = asset_value[-1][0]
-    st.success(f"해당 기간 동안의 총 수익률: **{final_ret:+.2f}% (초기 $1,000 투자 시 현재 가치: ${final_asset:.2f}**)")
+    # 5. 최종 결과 요약 텍스트 업데이트
+    # 만약 선택한 날짜가 데이터의 맨 마지막 날이라면 수익률은 0이 됩니다.
+    if len(cum_returns) > 0:
+        final_ret = cum_returns[-1][0] * 100
+        final_asset = asset_value[-1][0]
+        st.success(f"해당 기간 동안의 총 수익률: **{final_ret:+.2f}% (초기 $1,000 투자 시 현재 가치: ${final_asset:.2f}**)")
+    else:
+        st.warning("데이터의 마지막 날짜를 선택하셨습니다. 기간 수익률을 계산할 수 없습니다.")
 
 # 8. 데이터 가시화
 with st.expander("📊 4대 기술주 원본 데이터 및 상세 지표 "):
