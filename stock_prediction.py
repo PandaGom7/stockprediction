@@ -116,9 +116,6 @@ st.sidebar.subheader(f"📅 {view_date_str} 분석")
 st.sidebar.write(f"**실제 종가:** ${actual_val:.2f}")
 st.sidebar.write(f"**GRU 예측:** ${pred_val:.2f}")
 
-# 2. 기존의 '변동성'을 '전일 대비 등락'으로 이름 변경
-st.sidebar.write(f"**전일 대비 등락:** {((actual_val - actual_prices[idx-1][0]) if idx > 0 else 0):+.2f} USD")
-
 # 3. ⭐️ 새로 추가된 진짜 VIX 변동성 로직 ⭐️
 vix_values = df['VIX'].values[seq_length:] 
 selected_vix = vix_values[idx]
